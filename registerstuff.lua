@@ -76,34 +76,6 @@ register_grass_decoration(0.015, 0.075, 4)
 register_grass_decoration(0,      0.06,  3)
 register_grass_decoration(-0.015,  0.045, 2)
 register_grass_decoration(-0.03,   0.03,  1)
---[[
-minetest.register_on_newplayer(function(obj)
-	minetest.log('info','spawn stuff')
-	minetest.set_timeofday(0.35)
-	local inv = obj:get_inventory()
-	inv:add_item('main','binoculars:binoculars')
-	local pos = obj:get_pos()
-	local node = minetest.get_node(pos)
-	if node and not minetest.registered_nodes[node.name].walkable then
-		pos.y = 2
-		minetest.add_entity(pos,'boats:boat')
-		pos.y = 3
-		obj:set_pos(pos)
-	else
-		inv:add_item("main", "boats:boat")
-		for y = 2,38,2 do
-			pos.y=y
-			node = minetest.get_node(pos)
-			minetest.log('info',node.name)
-			if node and not minetest.registered_nodes[node.name].walkable then
-				obj:set_pos(pos)
-				break
-			end
-		end
-	end
-	return true
-end
-)--]]
 
 isln_pos1 = {x=0,y=0,z=0}
 isln_pos2 = {x=0,y=0,z=0}

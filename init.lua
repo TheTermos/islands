@@ -139,7 +139,25 @@ local isln_cliffs = nil
 
 local data = {}
 
-
+local function get_terrain_height(theight,hheight,cheight)
+		-- parabolic gradient
+	if theight > 0 and theight < shelf_thresh then
+		theight = theight * (theight*theight/(shelf_thresh*shelf_thresh)*0.5 + 0.5)
+	end	
+		-- hills
+	if theight > hills_thresh then
+		theight = theight + max((theight-hills_thresh) * hheight,0)
+		-- cliffs
+	elseif theight > 1 and theight < hills_thresh then 
+		local clifh = max(min(cheight,1),0) 
+		if clifh > 0 then
+			clifh = -1*(clifh-1)*(clifh-1) + 1
+			theight = theight + (hills_thresh-theight) * clifh * ((theight<2) and theight-1 or 1)
+		end
+	end
+	return theight
+end
+ 
 -- On generated function.
 
 -- 'minp' and 'maxp' are the minimum and maximum positions of the mapchunk that
@@ -180,11 +198,9 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		base_heightmap[z-minp.z+1]={}
 		for x = minp.x, maxp.x do
 			local theight = isln_terrain[z-minp.z+1][x-minp.x+1] + (convex and isln_var[z-minp.z+1][x-minp.x+1] or 0)
-			-- parabolic gradient
-			if theight > 0 and theight < shelf_thresh then
-				theight = theight * (theight*theight/(shelf_thresh*shelf_thresh)*0.5 + 0.5)
-			end	
-			base_heightmap[z-minp.z+1][x-minp.x+1]=theight
+			local hheight = isln_hills[z-minp.z+1][x-minp.x+1]
+			local cheight = isln_cliffs[z-minp.z+1][x-minp.x+1]
+			base_heightmap[z-minp.z+1][x-minp.x+1]=get_terrain_height(theight,hheight,cheight)
 		end
 	end	
 
@@ -193,18 +209,6 @@ minetest.register_on_generated(function(minp, maxp, seed)
 			for x = minp.x, maxp.x do
 				local vi = area:index(x, y, z)								
 				local theight = base_heightmap[z-minp.z+1][x-minp.x+1]
-				
-				-- hills
-				if theight > hills_thresh then
-					theight = theight + max((theight-hills_thresh) * isln_hills[z-minp.z+1][x-minp.x+1],0)
-				-- cliffs
-				elseif theight > 1 and theight < hills_thresh then 
-					local clifh = max(min(isln_cliffs[z-minp.z+1][x-minp.x+1],1),0) 
-					if clifh > 0 then
-						clifh = -1*(clifh-1)*(clifh-1) + 1
-						theight = theight + (hills_thresh-theight) * clifh * ((theight<2) and theight-1 or 1)
-					end
-				end
 				
 				if theight > y then
 					data[vi] = c_stone
@@ -228,28 +232,21 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	print ("[lvm_example] Mapchunk generation time " .. chugent .. " ms")
 end)
 
-minetest.register_on_chat_message(
-	function(name, message)
-		if message == 'doit' then
-			local plyr = minetest.get_player_by_name('singleplayer')
-			local pos = plyr:get_pos()
-			minetest.chat_send_all(minetest.get_biome_name(minetest.get_biome_data(pos).biome))
-		end
-	end
-)	
-
-
 minetest.register_on_newplayer(function(obj)
-	local nobj_terrain = minetest.get_perlin_map(np_terrain, {x=80,y=80,z=0})	
-	local map=nobj_terrain:get_2d_map({x=-40,y=-40})
-	local height = map[20][20]
+	local nobj_terrain = minetest.get_perlin_map(np_terrain, {x=1,y=1,z=0})	
+	local nobj_hills = minetest.get_perlin_map(np_hills, {x=1,y=1,z=0})	
+	local nobj_cliffs = minetest.get_perlin_map(np_cliffs, {x=1,y=1,z=0})	
+	local th=nobj_terrain:get_2d_map({x=1,y=1})
+	local hh=nobj_hills:get_2d_map({x=1,y=1})
+	local ch=nobj_cliffs:get_2d_map({x=1,y=1})
+	local height = get_terrain_height(th[1][1],hh[1][1],ch[1][1])
 
-	minetest.set_timeofday(0.35)
+	minetest.set_timeofday(0.30)
 	local inv = obj:get_inventory()
 	inv:add_item('main','binoculars:binoculars')
 	local pos = obj:get_pos()
 	local node = minetest.get_node(pos)
-	if height<1 then
+	if height<2 then
 		pos.y = 2
 		minetest.add_entity(pos,'boats:boat')
 		pos.y = 3

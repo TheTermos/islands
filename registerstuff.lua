@@ -102,7 +102,7 @@ minetest.register_on_chat_message(
 minetest.register_on_chat_message(
 	function(name, message)
 		if message == 'schm' then
-			local fname = minetest.get_worldpath() .."\\schematik.txt"
+			local fname = minetest.get_worldpath() .."/schematik.txt"
 			minetest.chat_send_all(fname)
 			minetest.create_schematic(isln_pos1,isln_pos2,nil,fname)
 			minetest.chat_send_all('saved')
@@ -113,7 +113,7 @@ minetest.register_on_chat_message(
 minetest.register_on_chat_message(
 	function(name, message)
 		if message == 'place' then
-			local fname = minetest.get_modpath('islands') .."\\schematics\\schematik.mts"
+			local fname = minetest.get_modpath('islands') .."/schematics/schematik.mts"
 			minetest.chat_send_all(fname)
 			minetest.place_schematic(isln_pos1,fname,'random',nil,false,'place_center_x,place_center_z')
 			minetest.chat_send_all('plced')

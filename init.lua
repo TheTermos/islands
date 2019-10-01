@@ -7,7 +7,7 @@ local random = math.random
 local convex = false
 local mpath = minetest.get_modpath('islands')
 
-dofile(mpath ..'\\registerstuff.lua')
+dofile(mpath ..'/registerstuff.lua')
 
 local mult = 1.0
 -- Set the 3D noise parameters for the terrain.

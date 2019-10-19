@@ -99,7 +99,7 @@ local base_heightmap = {}
 
 --minetest.set_mapgen_params({mgname = "singlenode", flags = "nolight"})
 
-minetest.set_mapgen_setting('mgname','singlenode',true)
+minetest.set_mapgen_setting('mg_name','singlenode',true)
 minetest.set_mapgen_setting('flags','nolight',true)
 
 
@@ -223,6 +223,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 
 	vm:set_data(data)
 	minetest.generate_decorations(vm)
+	minetest.generate_ores(vm)
 	vm:calc_lighting()
 	vm:write_to_map()
 	vm:update_liquids()

@@ -71,6 +71,25 @@ local function register_grass_decoration(offset, scale, length)
 	})
 end
 
+-- cotton
+minetest.register_decoration({
+	name = "islands:cotton_bush",
+	deco_type = "simple",
+	place_on = {"islands:dirt_with_grass_palm"},
+	sidelen = 16,
+	noise_params = {
+		offset = 0.0,
+		scale = 0.03,
+		spread = {x = 64, y = 64, z = 64},
+		seed = 1519,
+		octaves = 3,
+		persist = 0.6
+	},
+	y_max = 31000,
+	y_min = 2,
+	decoration = "farming:cotton_8",
+})
+
 register_grass_decoration(0.03,  0.09,  5)
 register_grass_decoration(0.015, 0.075, 4)
 register_grass_decoration(0,      0.06,  3)
@@ -89,6 +108,17 @@ minetest.register_on_chat_message(
 		end
 	end
 )	
+
+minetest.register_on_chat_message(
+	function(name, message)
+		if message == 'doit' then
+			local plyr = minetest.get_player_by_name('singleplayer')
+			local pos = plyr:get_pos()
+			minetest.chat_send_all(minetest.get_biome_name(minetest.get_biome_data(pos).biome))
+		end
+	end
+)	
+
 minetest.register_on_chat_message(
 	function(name, message)
 		if message == 'pos2' then

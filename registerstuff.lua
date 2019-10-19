@@ -78,7 +78,7 @@ minetest.register_decoration({
 	place_on = {"islands:dirt_with_grass_palm"},
 	sidelen = 16,
 	noise_params = {
-		offset = 0.0,
+		offset = -0.01,
 		scale = 0.03,
 		spread = {x = 64, y = 64, z = 64},
 		seed = 1519,

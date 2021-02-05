@@ -61,6 +61,17 @@ local np_cliffs = {
 --	flags = "absvalue"
 }
 
+local np_trees = {
+	offset = - 0.003,
+	scale = 0.008,
+	spread = {x = 64, y = 64, z = 64},
+	seed = 2,
+	octaves = 5,
+	persist = 1,
+	lacunarity = 1.91,
+--	flags = "absvalue"
+}
+
 local hills_offset = np_hills.spread.x*0.5
 local hills_thresh = floor((np_terrain.scale)*0.5)
 local shelf_thresh = floor((np_terrain.scale)*0.5) 
@@ -91,6 +102,7 @@ local base_max = max_height(np_terrain)
 local base_rng = base_max-base_min
 local easing_factor = 1/(base_max*base_max*4)
 local base_heightmap = {}
+local result_heightmap = {}
 
 
 -- Set singlenode mapgen (air nodes only).
@@ -105,14 +117,14 @@ minetest.set_mapgen_setting('flags','nolight',true)
 
 -- Get the content IDs for the nodes used.
 
-local c_sandstone = minetest.get_content_id("default:sandstone")
-local c_stone = minetest.get_content_id("default:stone")
-local c_sand = minetest.get_content_id("default:sand")
---local c_dirt = minetest.get_content_id("default:dirt_with_grass")
---local c_dirt = minetest.get_content_id("default:dirt_with_dry_grass")
-local c_dirt = minetest.get_content_id("islands:dirt_with_grass_palm")
+local c_stone = minetest.get_content_id("islands:stone")
+local c_sand = minetest.get_content_id("islands:sand")
+local c_sand_dark = minetest.get_content_id("islands:seabed")
+local c_dirt = minetest.get_content_id("islands:dirt")
+local c_dirt_g = minetest.get_content_id("islands:dirt_with_grass_palm")
+local c_dirt_l = minetest.get_content_id("islands:dirt_with_palm_litter")
 local c_snow = minetest.get_content_id("islands:dirt_with_snow")
-local c_water     = minetest.get_content_id("default:water_source")
+local c_water     = minetest.get_content_id("islands:water_source")
 
 
 -- Initialize noise object to nil. It will be created once only during the
@@ -190,17 +202,25 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		minetest.get_perlin_map(np_cliffs, permapdims3d)
 	isln_cliffs=nobj_cliffs:get_2d_map({x=minp.x,y=minp.z})
 	
+	-- trees
+	nobj_trees = nobj_trees or
+		minetest.get_perlin_map(np_trees, permapdims3d)
+	isln_trees=nobj_trees:get_2d_map({x=minp.x,y=minp.z})
+	
 	local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
 	local area = VoxelArea:new{MinEdge = emin, MaxEdge = emax}
 	vm:get_data(data)
-
-	for z = minp.z, maxp.z do
-		base_heightmap[z-minp.z+1]={}
-		for x = minp.x, maxp.x do
-			local theight = isln_terrain[z-minp.z+1][x-minp.x+1] + (convex and isln_var[z-minp.z+1][x-minp.x+1] or 0)
-			local hheight = isln_hills[z-minp.z+1][x-minp.x+1]
-			local cheight = isln_cliffs[z-minp.z+1][x-minp.x+1]
-			base_heightmap[z-minp.z+1][x-minp.x+1]=get_terrain_height(theight,hheight,cheight)
+	
+	
+	for z = 1, sidelen do
+		base_heightmap[z]={}		
+		result_heightmap[z]={}
+		for x = 1, sidelen do
+			local theight = isln_terrain[z][x] + (convex and isln_var[z][x] or 0)
+			local hheight = isln_hills[z][x]
+			local cheight = isln_cliffs[z][x]
+			base_heightmap[z][x]=theight			
+			result_heightmap[z][x]=get_terrain_height(theight,hheight,cheight)
 		end
 	end	
 
@@ -208,12 +228,15 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		for y = minp.y, maxp.y do
 			for x = minp.x, maxp.x do
 				local vi = area:index(x, y, z)								
-				local theight = base_heightmap[z-minp.z+1][x-minp.x+1]
+				local bheight = base_heightmap[z-minp.z+1][x-minp.x+1]
+				local theight = result_heightmap[z-minp.z+1][x-minp.x+1]
+				
+				local dirt = (theight > 2 and theight < hills_thresh and isln_trees[z-minp.z+1][x-minp.x+1] > 0) and c_dirt_l or c_dirt_g
 				
 				if theight > y then
 					data[vi] = c_stone
 				elseif y==ceil(theight) then
-					data[vi]= y<3 and c_sand or (y<60-random(3) and c_dirt or c_snow)
+					data[vi]= y < -3 and c_sand_dark or y<4 and c_sand or (y<60-random(3) and dirt or c_snow)
 				elseif y <= 1 then
 					data[vi] = c_water
 				end
@@ -224,9 +247,14 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	vm:set_data(data)
 	minetest.generate_decorations(vm)
 	minetest.generate_ores(vm)
-	vm:calc_lighting()
-	vm:write_to_map()
 	vm:update_liquids()
+	vm:calc_lighting()
+	vm:write_to_map(true)
+--	vm:update_liquids()
+--	vm:update_liquids()
+	minetest.after(0,function()
+		minetest.fix_light(minp,maxp)
+	end)
 	
 	-- Print generation time of this mapchunk.
 	local chugent = ceil((os.clock() - t0) * 1000)

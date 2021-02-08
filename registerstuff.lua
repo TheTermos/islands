@@ -8,6 +8,8 @@ local mpath = minetest.get_modpath('islands')
 local dbg = minetest.chat_send_all
 local rnodes = minetest.registered_nodes
 
+minetest.clear_registered_decorations()
+
 minetest.after(0,function()
 	minetest.settings:set('lighting_alpha',0.5)
 	minetest.settings:set('lighting_beta',3)
@@ -24,6 +26,7 @@ local function dig_up(pos, node, metadata, digger)
 	end
 end
 
+--[[
 minetest.register_node("islands:sand", {
 	description = "Sand",
 	tiles = {"islands_sand.png"},
@@ -62,14 +65,7 @@ minetest.register_node("islands:dirt_with_grass_palm", {
 	
 	after_dig_node = dig_up,
 	
-	--[[
-	after_dig_node = function(pos, oldnode, oldmetadata, digger)
-		if digger and digger:is_player() then
-			local stk = digger:get_wielded_item()
-			dbg(stk:get_name())
-		end
-	end	--]]
-})
+})	--]]
 
 minetest.register_node("islands:seabed", {
 	description = "Seabed",
@@ -78,6 +74,7 @@ minetest.register_node("islands:seabed", {
 	sounds = default.node_sound_sand_defaults(),
 })
 
+--[[
 minetest.register_node("islands:dirt_with_palm_litter", {
 	description = "Dirt with Litter",
 	tiles = {"jungle_floor.png", "islands_dirt.png",
@@ -102,7 +99,7 @@ minetest.register_node("islands:dirt_with_snow", {
 	sounds = default.node_sound_dirt_defaults({
 		footstep = {name = "default_snow_footstep", gain = 0.2},
 	}),
-})
+})	--]]
 
 minetest.register_node("islands:palm_tree", {
 	description = "Palm Tree",
@@ -248,13 +245,13 @@ minetest.register_node("islands:grass", {
 	sounds = default.node_sound_leaves_defaults(),
 })
 
-minetest.register_node("islands:water_source", {
+minetest.register_node(":default:water_source", {
 	description = "Water Source",
 	drawtype = "liquid",
 	waving = 3,
 	tiles = {
 		{
-			name = "islands_water_source_animated.png",
+			name = "default_water_source_animated.png",
 			backface_culling = false,
 			animation = {
 				type = "vertical_frames",
@@ -264,7 +261,7 @@ minetest.register_node("islands:water_source", {
 			},
 		},
 		{
-			name = "islands_water_source_animated.png",
+			name = "default_water_source_animated.png",
 			backface_culling = true,
 			animation = {
 				type = "vertical_frames",
@@ -296,7 +293,7 @@ minetest.register_node("islands:water_source", {
 minetest.register_decoration({
 	name = "islands:palm_tree_tall",
 	deco_type = "schematic",
-	place_on = {"islands:dirt_with_palm_litter"},
+	place_on = {"default:dirt_with_rainforest_litter"},
 	sidelen = 16,
 	noise_params = {
 		offset = 0.001,
@@ -316,10 +313,10 @@ minetest.register_decoration({
 minetest.register_decoration({
 	name = "islands:palm_tree",
 	deco_type = "schematic",
-	place_on = {"islands:dirt_with_palm_litter"},
+	place_on = {"default:dirt_with_rainforest_litter"},
 	sidelen = 16,
 	noise_params = {
-		offset = 0.01,
+		offset = 0.02,
 		scale = 0.003,
 		spread = {x = 64, y = 64, z = 64},
 		seed = 2,
@@ -336,7 +333,7 @@ minetest.register_decoration({
 minetest.register_decoration({
 	name = "islands:tree",
 	deco_type = "schematic",
-	place_on = {"islands:dirt_with_palm_litter"},
+	place_on = {"default:dirt_with_rainforest_litter"},
 	sidelen = 16,
 	noise_params = {
 		offset = 0.013,
@@ -356,7 +353,7 @@ minetest.register_decoration({
 minetest.register_decoration({
 	name = "islands:palm_tree_small",
 	deco_type = "schematic",
-	place_on = {"islands:dirt_with_palm_litter"},
+	place_on = {"default:dirt_with_rainforest_litter"},
 	sidelen = 2,
 	noise_params = {
 		offset = 0.03,
@@ -384,7 +381,7 @@ minetest.register_decoration({
 minetest.register_decoration({
 	name = "islands:grass",
 	deco_type = "simple",
-	place_on = {"islands:dirt_with_grass_palm","islands:dirt_with_palm_litter"},
+	place_on = {"default:dirt_with_rainforest_litter","default:dirt_with_grass"},
 	sidelen = 2,
 	noise_params = {
 		offset = 0.15,
@@ -402,7 +399,7 @@ minetest.register_decoration({
 minetest.register_decoration({
 	name = "islands:underbrush",
 	deco_type = "simple",
-	place_on = {"islands:dirt_with_palm_litter"},
+	place_on = {"default:dirt_with_rainforest_litter"},
 	sidelen = 2,
 	noise_params = {
 		offset = 0.15,
@@ -421,7 +418,7 @@ minetest.register_decoration({
 minetest.register_decoration({
 	name = "islands:cotton_bush",
 	deco_type = "simple",
-	place_on = {"islands:dirt_with_grass_palm"},
+	place_on = {"default:dirt_with_rainforest_litter","default:dirt_with_grass"},
 	sidelen = 16,
 	noise_params = {
 		offset = -0.01,
@@ -439,7 +436,7 @@ minetest.register_decoration({
 	minetest.register_decoration({
 		name = "islands:corals",
 		deco_type = "simple",
-		place_on = {"islands:sand"},
+		place_on = {"default:sand"},
 		place_offset_y = -1,
 		sidelen = 4,
 		noise_params = {

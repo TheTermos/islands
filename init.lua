@@ -117,14 +117,14 @@ minetest.set_mapgen_setting('flags','nolight',true)
 
 -- Get the content IDs for the nodes used.
 
-local c_stone = minetest.get_content_id("islands:stone")
-local c_sand = minetest.get_content_id("islands:sand")
+local c_stone = minetest.get_content_id("default:stone")
+local c_sand = minetest.get_content_id("default:sand")
 local c_sand_dark = minetest.get_content_id("islands:seabed")
-local c_dirt = minetest.get_content_id("islands:dirt")
-local c_dirt_g = minetest.get_content_id("islands:dirt_with_grass_palm")
-local c_dirt_l = minetest.get_content_id("islands:dirt_with_palm_litter")
-local c_snow = minetest.get_content_id("islands:dirt_with_snow")
-local c_water     = minetest.get_content_id("islands:water_source")
+local c_dirt = minetest.get_content_id("default:dirt")
+local c_dirt_g = minetest.get_content_id("default:dirt_with_grass")
+local c_dirt_l = minetest.get_content_id("default:dirt_with_rainforest_litter")
+local c_snow = minetest.get_content_id("default:dirt_with_snow")
+local c_water     = minetest.get_content_id("default:water_source")
 
 
 -- Initialize noise object to nil. It will be created once only during the

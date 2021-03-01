@@ -1,3 +1,7 @@
+-- fun island
+-- seed = 5436146057422610855 
+-- pos -1590 33 -171
+
 local floor = math.floor
 local ceil = math.ceil
 local min = math.min
@@ -7,6 +11,16 @@ local random = math.random
 local mpath = minetest.get_modpath('islands')
 local dbg = minetest.chat_send_all
 local rnodes = minetest.registered_nodes
+
+minetest.clear_registered_decorations()
+
+minetest.set_mapgen_setting("mg_biome_np_heat", 
+"90,0,(1000,1000,1000),5349,3,0.5,2",
+true)
+
+minetest.set_mapgen_setting("mg_biome_np_humidity", 
+"54,10,(1000,1000,1000),5349,3,0.5,2",
+true)
 
 minetest.after(0,function()
 	minetest.settings:set('lighting_alpha',0.5)
@@ -24,6 +38,7 @@ local function dig_up(pos, node, metadata, digger)
 	end
 end
 
+--[[
 minetest.register_node("islands:sand", {
 	description = "Sand",
 	tiles = {"islands_sand.png"},
@@ -62,14 +77,7 @@ minetest.register_node("islands:dirt_with_grass_palm", {
 	
 	after_dig_node = dig_up,
 	
-	--[[
-	after_dig_node = function(pos, oldnode, oldmetadata, digger)
-		if digger and digger:is_player() then
-			local stk = digger:get_wielded_item()
-			dbg(stk:get_name())
-		end
-	end	--]]
-})
+})	--]]
 
 minetest.register_node("islands:seabed", {
 	description = "Seabed",
@@ -78,6 +86,7 @@ minetest.register_node("islands:seabed", {
 	sounds = default.node_sound_sand_defaults(),
 })
 
+--[[
 minetest.register_node("islands:dirt_with_palm_litter", {
 	description = "Dirt with Litter",
 	tiles = {"jungle_floor.png", "islands_dirt.png",
@@ -102,7 +111,7 @@ minetest.register_node("islands:dirt_with_snow", {
 	sounds = default.node_sound_dirt_defaults({
 		footstep = {name = "default_snow_footstep", gain = 0.2},
 	}),
-})
+})	--]]
 
 minetest.register_node("islands:palm_tree", {
 	description = "Palm Tree",
@@ -125,7 +134,7 @@ minetest.register_node("islands:palm_leaves", {
 	{name="nothing.png"},
 	{name="palm_leaves.png",backface_culling = false},
 	},
-	waving = 1,
+	waving = 2,
 	paramtype = "light",
 	is_ground_content = false,
 	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1},
@@ -138,13 +147,46 @@ minetest.register_node("islands:palm_leaves", {
 	},
 	sounds = default.node_sound_leaves_defaults(),
 
-	after_place_node = after_place_leaves,
+	--[[
+	on_rightclick = function(pos)
+		minetest.set_node(pos,{name="islands:palm_leaves2"})
+	end,	--]]
 })
+
+minetest.register_node("islands:palm_leaves2", {
+	description = ("Uspen Tree Leaves"),
+--	drawtype = "allfaces_optional",
+	drawtype = "nodebox",
+	tiles = {
+	{name="palm_leaves_top.png",backface_culling = false},
+	{name="nothing.png"},
+	{name="palm_leaves.png",backface_culling = false},
+	},
+	waving = 2,
+	paramtype = "light",
+	is_ground_content = false,
+	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1},
+	drop = {
+		max_items = 1,
+		items = {
+			{items = {"default:aspen_sapling"}, rarity = 20},
+			{items = {"default:aspen_leaves"}}
+		}
+	},
+	color = "#00B000",
+	sounds = default.node_sound_leaves_defaults(),
+
+	--[[
+	on_rightclick = function(pos)
+		minetest.set_node(pos,{name="islands:palm_leaves"})
+	end,	--]]
+})
+
 
 minetest.register_node("islands:leaves", {
 	description = "Leaves",
 	drawtype = "allfaces_optional",
-	waving = 1,
+	waving = 2,
 	tiles = {"islands_leaves.png"},
 	paramtype = "light",
 	is_ground_content = false,
@@ -155,7 +197,7 @@ minetest.register_node("islands:leaves", {
 minetest.register_node("islands:twigs", {
 	description = "Twigs",
 	drawtype = "allfaces_optional",
-	waving = 1,
+	waving = 0,
 	tiles = {"twigs.png"},
 	paramtype = "light",
 	is_ground_content = false,
@@ -187,7 +229,6 @@ minetest.register_node("islands:underbrush", {
 	groups = {snappy = 3, flammable = 2, leaves = 1},
 	sounds = default.node_sound_leaves_defaults(),
 
-	after_place_node = after_place_leaves,
 })
 
 minetest.register_node("islands:palm_small_bottom", {
@@ -215,6 +256,7 @@ minetest.register_node("islands:palm_small_top", {
 	paramtype = "light",
 	sunlight_propagates = true,
 	drop = '',
+	waving = 1,
 	pointable = false,
 	walkable = false,
 	groups = {snappy = 3, flammable = 2},
@@ -241,6 +283,7 @@ minetest.register_node("islands:grass", {
 	},
 	paramtype = "light",
 	drop = "",
+	waving = 1,
 	buildable_to = true,
 	sunlight_propagates = true,
 	walkable = false,
@@ -248,13 +291,13 @@ minetest.register_node("islands:grass", {
 	sounds = default.node_sound_leaves_defaults(),
 })
 
-minetest.register_node("islands:water_source", {
+minetest.register_node(":default:water_source", {
 	description = "Water Source",
 	drawtype = "liquid",
 	waving = 3,
 	tiles = {
 		{
-			name = "islands_water_source_animated.png",
+			name = "default_water_source_animated.png",
 			backface_culling = false,
 			animation = {
 				type = "vertical_frames",
@@ -264,7 +307,7 @@ minetest.register_node("islands:water_source", {
 			},
 		},
 		{
-			name = "islands_water_source_animated.png",
+			name = "default_water_source_animated.png",
 			backface_culling = true,
 			animation = {
 				type = "vertical_frames",
@@ -274,7 +317,8 @@ minetest.register_node("islands:water_source", {
 			},
 		},
 	},
-	alpha = 215,
+--	alpha = 215,
+	use_texture_alpha = true,
 	sunlight_propagates = true,
 	paramtype = "light",
 	walkable = false,
@@ -296,7 +340,7 @@ minetest.register_node("islands:water_source", {
 minetest.register_decoration({
 	name = "islands:palm_tree_tall",
 	deco_type = "schematic",
-	place_on = {"islands:dirt_with_palm_litter"},
+	place_on = {"default:dirt_with_rainforest_litter"},
 	sidelen = 16,
 	noise_params = {
 		offset = 0.001,
@@ -316,10 +360,10 @@ minetest.register_decoration({
 minetest.register_decoration({
 	name = "islands:palm_tree",
 	deco_type = "schematic",
-	place_on = {"islands:dirt_with_palm_litter"},
+	place_on = {"default:dirt_with_rainforest_litter"},
 	sidelen = 16,
 	noise_params = {
-		offset = 0.01,
+		offset = 0.02,
 		scale = 0.003,
 		spread = {x = 64, y = 64, z = 64},
 		seed = 2,
@@ -336,7 +380,7 @@ minetest.register_decoration({
 minetest.register_decoration({
 	name = "islands:tree",
 	deco_type = "schematic",
-	place_on = {"islands:dirt_with_palm_litter"},
+	place_on = {"default:dirt_with_rainforest_litter"},
 	sidelen = 16,
 	noise_params = {
 		offset = 0.013,
@@ -356,7 +400,7 @@ minetest.register_decoration({
 minetest.register_decoration({
 	name = "islands:palm_tree_small",
 	deco_type = "schematic",
-	place_on = {"islands:dirt_with_palm_litter"},
+	place_on = {"default:dirt_with_rainforest_litter"},
 	sidelen = 2,
 	noise_params = {
 		offset = 0.03,
@@ -384,7 +428,7 @@ minetest.register_decoration({
 minetest.register_decoration({
 	name = "islands:grass",
 	deco_type = "simple",
-	place_on = {"islands:dirt_with_grass_palm","islands:dirt_with_palm_litter"},
+	place_on = {"default:dirt_with_rainforest_litter","default:dirt_with_grass"},
 	sidelen = 2,
 	noise_params = {
 		offset = 0.15,
@@ -402,7 +446,7 @@ minetest.register_decoration({
 minetest.register_decoration({
 	name = "islands:underbrush",
 	deco_type = "simple",
-	place_on = {"islands:dirt_with_palm_litter"},
+	place_on = {"default:dirt_with_rainforest_litter"},
 	sidelen = 2,
 	noise_params = {
 		offset = 0.15,
@@ -421,7 +465,7 @@ minetest.register_decoration({
 minetest.register_decoration({
 	name = "islands:cotton_bush",
 	deco_type = "simple",
-	place_on = {"islands:dirt_with_grass_palm"},
+	place_on = {"default:dirt_with_rainforest_litter","default:dirt_with_grass"},
 	sidelen = 16,
 	noise_params = {
 		offset = -0.01,
@@ -439,7 +483,7 @@ minetest.register_decoration({
 	minetest.register_decoration({
 		name = "islands:corals",
 		deco_type = "simple",
-		place_on = {"islands:sand"},
+		place_on = {"default:sand"},
 		place_offset_y = -1,
 		sidelen = 4,
 		noise_params = {
@@ -492,8 +536,8 @@ minetest.register_craft({
 })
 
 
---[[
 
+--[[
 isln_pos1 = {x=0,y=0,z=0}
 isln_pos2 = {x=0,y=0,z=0}
 
@@ -542,20 +586,11 @@ minetest.register_on_chat_message(
 minetest.register_on_chat_message(
 	function(name, message)
 		if message == 'place' then
-			local fname = minetest.get_modpath('islands') .."/schematics/palm_tree.mts"
+			local fname = minetest.get_modpath('islands') .."/schematics/palm_tree_big.mts"
 			minetest.chat_send_all(fname)
 			minetest.place_schematic(isln_pos1,fname,'random',nil,false,'place_center_x,place_center_z')
 			minetest.chat_send_all('plced')
 		end
 	end
 )	
-
-minetest.register_lbm({
-name  = "islands:temp",
-nodenames={"default:aspen_leaves"},
-run_at_every_load = true,
-action=function(pos,node)
-	dbg("changin")
-	minetest.set_node(pos,{name="islands:palm_leaves"})
-end
-})	--]]
+	--]]

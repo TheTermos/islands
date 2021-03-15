@@ -22,12 +22,25 @@ minetest.set_mapgen_setting("mg_biome_np_humidity",
 "54,10,(1000,1000,1000),5349,3,0.5,2",
 true)
 
+islands.settings_bkp = {}
+islands.settings_bkp.lighting_alpha = minetest.settings:get('lighting_alpha')
+islands.settings_bkp.lighting_beta = minetest.settings:get('lighting_beta')
+islands.settings_bkp.lighting_boost = minetest.settings:get('lighting_boost')
+islands.settings_bkp.lighting_boost_center = minetest.settings:get('lighting_boost_center')
+islands.settings_bkp.lighting_boost_spread = minetest.settings:get('lighting_boost_spread')
+
 minetest.after(0,function()
 	minetest.settings:set('lighting_alpha',0.5)
 	minetest.settings:set('lighting_beta',3)
 	minetest.settings:set('lighting_boost',0.15)
 	minetest.settings:set('lighting_boost_center',0.5)
 	minetest.settings:set('lighting_boost_spread',0.2)
+end)
+
+minetest.register_on_shutdown(function()
+	for k,v in pairs(islands.settings_bkp) do
+		minetest.settings:set(k,v)
+	end
 end)
 
 local function dig_up(pos, node, metadata, digger)

@@ -139,7 +139,7 @@ minetest.register_node("islands:palm_tree", {
 })
 
 minetest.register_node("islands:palm_leaves", {
-	description = ("Uspen Tree Leaves"),
+	description = ("Palm Tree Leaves"),
 --	drawtype = "allfaces_optional",
 	drawtype = "nodebox",
 	tiles = {
@@ -154,8 +154,8 @@ minetest.register_node("islands:palm_leaves", {
 	drop = {
 		max_items = 1,
 		items = {
-			{items = {"default:aspen_sapling"}, rarity = 20},
-			{items = {"default:aspen_leaves"}}
+			--{items = {"islands:palm_tree_sapling"}, rarity = 20},
+			{items = {"islands:palm_leaves"}}
 		}
 	},
 	sounds = default.node_sound_leaves_defaults(),
@@ -167,7 +167,7 @@ minetest.register_node("islands:palm_leaves", {
 })
 
 minetest.register_node("islands:palm_leaves2", {
-	description = ("Uspen Tree Leaves"),
+	description = ("Palm Tree Leaves2"),
 --	drawtype = "allfaces_optional",
 	drawtype = "nodebox",
 	tiles = {
@@ -182,8 +182,8 @@ minetest.register_node("islands:palm_leaves2", {
 	drop = {
 		max_items = 1,
 		items = {
-			{items = {"default:aspen_sapling"}, rarity = 20},
-			{items = {"default:aspen_leaves"}}
+			--{items = {"islands:palm_tree_sapling"}, rarity = 20},
+			{items = {"islands:palm_leaves2"}}
 		}
 	},
 	color = "#00B000",
